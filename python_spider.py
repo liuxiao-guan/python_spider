@@ -19,11 +19,12 @@ response = response.decode("utf-8")
 
 #网页解析器
 soup = BeautifulSoup(response, 'html.parser')
-links =soup.find_all('a', href = re.compile(r'info/\d+'))
+links =soup.find_all('a', href = re.compile(r'info/+\d'))
 grab_url = [ ]
 for link in links:
 #	print(link['href'])
 	url = "http://ugs.whu.edu.cn/" + str(link.get('href'))
+#	url = str(link.get('href'))
 	grab_url.append(url)
 grab_data = [ ]
 for url in grab_url:
@@ -40,11 +41,16 @@ for url in grab_url:
 	soup = BeautifulSoup(response, 'html.parser')
 	time.sleep(0.1)
 	data = { }
+	partment = soup.find(class_ = "title")
+	data[''] = partment.get_text()
+	#获取标题
 	title_node = soup.find(class_ = "title")
 	data['title'] = title_node.get_text()
-	repattern = re.compile(r'\d+\d+\d')
-
-	data['time'] = repattern.findall(response[0])
+	#获取时间
+	repattern = re.compile(r'\d\d\d\d-\d\d-\d\d')
+	data['time'] = repattern.findall(response)[0]
+	data['html_source'] = url
+	
 	content_node = soup.find_all('p')
 	grab_text = [ ]
 	for text in content_node:
@@ -56,7 +62,7 @@ for url in grab_url:
 	for i in grab_text:
 		if '' in grab_text:
 			grab_text.remove('')
-	print(grab_text)
+	#print(grab_text)
 	separator = ''
 	grab_text = separator.join(grab_text)
 	data['content'] = grab_text
@@ -68,5 +74,10 @@ for url in grab_url:
 	
 
 
+#http://travel.people.com.cn/n1/2020/0905/c41570-31850731.html
 
-
+#http://renshi.people.com.cn/n1/2020/0904/c139617-31849991.html
+#http://society.people.com.cn/n1/2020/0905/c1008-31850713.html
+#http://ugs.whu.edu.cn/info/1039/9727.htm
+#http://ugs.whu.edu.cn/__local/5/DD/16/7D56DB7AFDAD8D70D9CBEE031F7_A05E1856_37B8.jpg
+#http://ugs.whu.edu.cn/__local/D/DC/07/0147FA942ECA58F491A1EA70E0F_47AF26C6_479C.jpg
